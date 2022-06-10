@@ -1137,6 +1137,17 @@ export type CollectionInfoQueryVariables = Exact<{
 
 export type CollectionInfoQuery = { __typename?: 'RootQuery', collections: { __typename?: 'CollectionConnection', nodes: Array<{ __typename?: 'Collection', address: string, description: string, name?: string | null, symbol?: string | null, totalSupply?: number | null, networkInfo: { __typename?: 'NetworkInfo', network: Network, chain: Chain }, attributes?: Array<{ __typename?: 'CollectionAttribute', traitType?: string | null, valueMetrics: Array<{ __typename?: 'CollectionAttributeValue', value: string, count: number, percent: number }> }> | null }>, pageInfo: { __typename?: 'PageInfo', limit: number, endCursor?: string | null, hasNextPage: boolean } } };
 
+export type MeNfTsQueryVariables = Exact<{
+  filter?: InputMaybe<TokensQueryFilter>;
+  networks?: InputMaybe<Array<NetworkInput> | NetworkInput>;
+  pagination?: InputMaybe<PaginationInput>;
+  sort?: InputMaybe<TokenSortInput>;
+  where?: InputMaybe<TokensQueryInput>;
+}>;
+
+
+export type MeNfTsQuery = { __typename?: 'RootQuery', tokens: { __typename?: 'TokenWithMarketsSummaryConnection', nodes: Array<{ __typename?: 'TokenWithMarketsSummary', token: { __typename?: 'Token', collectionAddress: string, tokenId: string, name?: string | null, owner?: string | null, metadata?: any | null, image?: { __typename?: 'TokenContentMedia', url?: string | null } | null } }> } };
+
 
 export const CollectionInfoDocument = gql`
     query CollectionInfo($networks: [NetworkInput!], $pagination: PaginationInput, $sort: CollectionSortKeySortInput, $where: CollectionsQueryInput) {
@@ -1204,6 +1215,62 @@ export function useCollectionInfoLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type CollectionInfoQueryHookResult = ReturnType<typeof useCollectionInfoQuery>;
 export type CollectionInfoLazyQueryHookResult = ReturnType<typeof useCollectionInfoLazyQuery>;
 export type CollectionInfoQueryResult = Apollo.QueryResult<CollectionInfoQuery, CollectionInfoQueryVariables>;
+export const MeNfTsDocument = gql`
+    query MeNFTs($filter: TokensQueryFilter, $networks: [NetworkInput!], $pagination: PaginationInput, $sort: TokenSortInput, $where: TokensQueryInput) {
+  tokens(
+    filter: $filter
+    networks: $networks
+    pagination: $pagination
+    sort: $sort
+    where: $where
+  ) {
+    nodes {
+      token {
+        collectionAddress
+        tokenId
+        name
+        owner
+        image {
+          url
+        }
+        metadata
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useMeNfTsQuery__
+ *
+ * To run a query within a React component, call `useMeNfTsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMeNfTsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMeNfTsQuery({
+ *   variables: {
+ *      filter: // value for 'filter'
+ *      networks: // value for 'networks'
+ *      pagination: // value for 'pagination'
+ *      sort: // value for 'sort'
+ *      where: // value for 'where'
+ *   },
+ * });
+ */
+export function useMeNfTsQuery(baseOptions?: Apollo.QueryHookOptions<MeNfTsQuery, MeNfTsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MeNfTsQuery, MeNfTsQueryVariables>(MeNfTsDocument, options);
+      }
+export function useMeNfTsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeNfTsQuery, MeNfTsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MeNfTsQuery, MeNfTsQueryVariables>(MeNfTsDocument, options);
+        }
+export type MeNfTsQueryHookResult = ReturnType<typeof useMeNfTsQuery>;
+export type MeNfTsLazyQueryHookResult = ReturnType<typeof useMeNfTsLazyQuery>;
+export type MeNfTsQueryResult = Apollo.QueryResult<MeNfTsQuery, MeNfTsQueryVariables>;
 
       export interface PossibleTypesResultData {
         possibleTypes: {

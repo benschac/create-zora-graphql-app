@@ -36,3 +36,32 @@ query CollectionInfo(
     }
   }
 }
+
+query MeNFTs(
+  $filter: TokensQueryFilter
+  $networks: [NetworkInput!]
+  $pagination: PaginationInput
+  $sort: TokenSortInput
+  $where: TokensQueryInput
+) {
+  tokens(
+    filter: $filter
+    networks: $networks
+    pagination: $pagination
+    sort: $sort
+    where: $where
+  ) {
+    nodes {
+      token {
+        collectionAddress
+        tokenId
+        name
+        owner
+        image {
+          url
+        }
+        metadata
+      }
+    }
+  }
+}

@@ -1,34 +1,28 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import type { NextPage } from "next";
-import error from "next/error";
 import Head from "next/head";
+import { useAccount } from "wagmi";
 import {
-  useCollectionInfoQuery,
-  CollectionSortKey,
-  SortDirection,
   Chain,
   Network,
+  useMeNfTsQuery,
 } from "../src/generated/graphql";
+import {
+  NFTPreview,
+} from "@zoralabs/nft-components";
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
-  const { data, loading, error } = useCollectionInfoQuery({
+  const { data: accountData } = useAccount();
+  const { data, loading, error } = useMeNfTsQuery({
     variables: {
-      networks: [{ chain: Chain.Mainnet, network: Network.Ethereum }],
-      pagination: {
-        limit: 10,
-      },
-      sort: {
-        sortKey: CollectionSortKey.Created,
-        sortDirection: SortDirection.Desc,
-      },
       where: {
-        collectionAddresses: ["0xc729Ce9bF1030fbb639849a96fA8BBD013680B64"],
+        ownerAddresses: accountData?.address ? [accountData?.address] : [],
       },
+      networks: [{ chain: Chain.Mainnet, network: Network.Ethereum }],
+      sort: null,
     },
   });
-
-  console.log(data);
 
   return (
     <div className={styles.container}>
@@ -43,11 +37,21 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <ConnectButton />
-
+        <ul>
+          {data?.tokens.nodes.map(({ token }) => (
+            <li key={token.tokenId}>
+              <NFTPreview
+                contract={token.collectionAddress}
+                id={token.tokenId}
+              />
+            </li>
+          ))}
+        </ul>
         <h1 className={styles.title}>
           Welcome to <a href="">RainbowKit</a> + <a href="">wagmi</a> +{" "}
-          <a href="">ZDK</a> + <a href="https://nextjs.org">Next.js!</a>
-          {JSON.stringify(data, null, 2)}
+          <a href="">Zora GraphQL API</a> +{" "}
+          <a href="">Apollo Hooks with Codegen</a> +{" "}
+          <a href="https://nextjs.org">Next.js!</a>
         </h1>
 
         <p className={styles.description}>
