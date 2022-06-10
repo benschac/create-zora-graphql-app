@@ -6,21 +6,27 @@ import {
   Chain,
   Network,
   useMeNfTsQuery,
+  SortDirection,
+  TokenSortKey,
 } from "../src/generated/graphql";
-import {
-  NFTPreview,
-} from "@zoralabs/nft-components";
+import { NFTPreview } from "@zoralabs/nft-components";
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
   const { data: accountData } = useAccount();
-  const { data, loading, error } = useMeNfTsQuery({
+  const { data } = useMeNfTsQuery({
     variables: {
       where: {
         ownerAddresses: accountData?.address ? [accountData?.address] : [],
       },
+      pagination: {
+        limit: 40,
+      },
       networks: [{ chain: Chain.Mainnet, network: Network.Ethereum }],
-      sort: null,
+      sort: {
+        sortDirection: SortDirection.Asc,
+        sortKey: TokenSortKey.Transferred,
+      },
     },
   });
 
@@ -37,16 +43,6 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <ConnectButton />
-        <ul>
-          {data?.tokens.nodes.map(({ token }) => (
-            <li key={token.tokenId}>
-              <NFTPreview
-                contract={token.collectionAddress}
-                id={token.tokenId}
-              />
-            </li>
-          ))}
-        </ul>
         <h1 className={styles.title}>
           Welcome to <a href="">RainbowKit</a> + <a href="">wagmi</a> +{" "}
           <a href="">Zora GraphQL API</a> +{" "}
@@ -102,6 +98,13 @@ const Home: NextPage = () => {
           </a>
         </div>
       </main>
+      <div className={styles.grid}>
+        {data?.tokens.nodes.map(({ token }) => (
+          <div key={token.tokenId}>
+            <NFTPreview contract={token.collectionAddress} id={token.tokenId} />
+          </div>
+        ))}
+      </div>
 
       <footer className={styles.footer}>
         <a href="https://rainbow.me" target="_blank" rel="noopener noreferrer">
